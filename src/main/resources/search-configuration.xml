@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~   Copyright (c) 2013-2022. LA Referencia / Red CLARA and others
+  ~
+  ~   This program is free software: you can redistribute it and/or modify
+  ~   it under the terms of the GNU Affero General Public License as published by
+  ~   the Free Software Foundation, either version 3 of the License, or
+  ~   (at your option) any later version.
+  ~
+  ~   This program is distributed in the hope that it will be useful,
+  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~   GNU Affero General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU Affero General Public License
+  ~   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~   This file is part of LA Referencia software platform LRHarvester v4.x
+  ~   For any further information please contact Lautaro Matas <lmatas@gmail.com>
+  -->
+
+<!--
+    This file enables the configuration settings to be used for searching within entities
+
+    To use this configuration, you must specify a qualifier:
+    @Autowired
+    @Qualifier("xmlService")
+    SearchConfigurationService searchConfigurationService;
+
+ -->
+
+<configurations xmlns="http://www.lareferencia.info/schema/4.0/search">
+    <configuration id="personSearchConfiguration">
+        <index>entity</index>
+        <base-query>type:Person</base-query>
+        <fields>
+            <field name="orcidField" index-field="Person.identifier.orcid"/>
+            <field name="cienciaIdField" index-field="Person.identifier.cienciaID"/>
+            <field name="nameField" index-field="Person.name"/>
+            <field name="familyNameField" index-field="Person.familyName"/>
+            <field name="givenNameField" index-field="Person.givenName"/>
+        </fields>
+        <filters default="_defaultName">
+
+            <filter name="orcid" field-ref="orcidField"/>
+            <filter name="cienciaID" field-ref="cienciaIdField"/>
+
+            <filter name="_defaultIdentifier">
+                <conditions>
+                    <condition filter-ref="orcid"/>
+                    <condition operator="OR" filter-ref="cienciaID"/>
+                </conditions>
+            </filter>
+            <filter name="identifier">
+                <conditions default-filter-ref="_defaultIdentifier">
+                    <condition filter-ref="orcid"/>
+                    <condition filter-ref="cienciaID"/>
+                </conditions>
+            </filter>
+            <filter name="_defaultName" field-ref="nameField">
+                <value condition="CONTAINS"/>
+            </filter>
+            <filter name="name">
+                <conditions default-filter-ref="_defaultName">
+                    <condition>
+                        <filter name="givenName" field-ref="givenNameField"/>
+                    </condition>
+                    <condition>
+                        <filter name="familyName" field-ref="familyNameField"/>
+                    </condition>
+                </conditions>
+            </filter>
+            <filter name="isni" index-field="Person.affiliation..Organization.identifier.isni"/>
+            <filter name="ringgold" index-field="Person.affiliation..Organization.identifier.ringgold"/>
+
+            <filter name="_affiliationId.all">
+                <conditions>
+                    <condition filter-ref="isni"/>
+                    <condition operator="OR" filter-ref="ringgold"/>
+                </conditions>
+            </filter>
+            <filter name="_affiliationName" index-field="Person.affiliation..Organization.legalName"/>
+            <filter name="_defaultAffiliation">
+                <conditions>
+                    <condition filter-ref="_affiliationId.all"/>
+                    <condition operator="OR" filter-ref="_affiliationName"/>
+                </conditions>
+            </filter>
+            <filter name="affiliation">
+                <conditions default-filter-ref="_defaultAffiliation">
+                    <condition filter-ref="isni"/>
+                    <condition filter-ref="ringgold"/>
+                </conditions>
+            </filter>
+        </filters>
+        <sorts>
+            <sort name="name" default-direction="ASC" field-ref="nameField"/>
+            <sort name="familyName" default-direction="ASC" field-ref="familyNameField"/>
+            <sort name="givenName" default-direction="ASC" field-ref="givenNameField"/>
+        </sorts>
+        <sizes default="10">
+            <size>10</size>
+            <size>20</size>
+            <size>100</size>
+        </sizes>
+    </configuration>
+    <configuration id="publicationSearchConfiguration">
+        <index>entity</index>
+        <base-query>type:Publication</base-query>
+        <fields>
+            <field name="titleField" index-field="CreativeWork.headline"/>
+            <field name="subjectField" index-field="CreativeWork.about..CreativeWork.keywords"/>
+            <field name="abstractField" index-field="CreativeWork.description"/>
+            <field name="authorPersonNameField" index-field="CreativeWork.author..CreativeWork.author.name"/>
+            <field name="authorOrgNameField"
+                index-field="CreativeWork.author.organization..CreativeWork.author.name"/>
+            <field name="contributorPersonNameField"
+                index-field="CreativeWork.contributor.person..CreativeWork.contributor.name"/>
+            <field name="contributorOrgNameField"
+                index-field="CreativeWork.contributor.organization..CreativeWork.contributor.name"/>
+            <field name="idHandleField" index-field="CreativeWork.identifier.handle"/>
+            <field name="idDOIField" index-field="CreativeWork.identifier.doi"/>
+            <!-- TODO -->
+            <field name="idISSNField" index-field="CreativeWork.identifier.doi"/>
+            <field name="idRCAAPTIDField" index-field="CreativeWork.identifier.doi"/>
+            <field name="rightsNameField" index-field="CreativeWork.conditionsOfAccess"/>
+            <field name="rightsURIField" index-field="CreativeWork.conditionsOfAccess.uri"/>
+            <field name="typeNameField" index-field="CreativeWork.additionalType"/>
+            <field name="typeURIField" index-field="CreativeWork.additionalType.url"/>
+            <field name="languageField" index-field="CreativeWork.inLanguage"/>
+            <field name="publishedDateField" index-field="CreativeWork.sdDatePublished"/>
+            <field name="availableDateField" type="DATE" index-field="CreativeWork.datePublished"/>
+            <field name="serviceNameField" index-field="CreativeWork.provider..Service.alternateName"/>
+        </fields>
+        <filters default="_default_keyword">
+            <!-- &fq=(fs.CreativeWork.conditionsOfAccess.uri:http://purl.org/coar/access_right/c_abf2 OR fs.CreativeWork.conditionsOfAccess:open access)-->
+            <!-- 
+            <filter name="isOpenAccessFilter">
+                <conditions>
+                    <condition>
+                        <filter index-field-ref="rightsNameField">
+                            <value condition="EQ">
+                                <field-value>open access</field-value>
+                            </value>
+                        </filter>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field-ref="rightsURIField">
+                            <value condition="EQ">
+                                <field-value>http://purl.org/coar/access_right/c_abf2</field-value>
+                            </value>
+                        </filter>
+                    </condition>
+                </conditions>
+            </filter>
+            -->
+
+            <filter name="_default_keyword">
+                <conditions>
+                    <condition filter-ref="title"/>
+                    <condition operator="OR" filter-ref="abstract"/>
+                    <condition operator="OR" filter-ref="keyword"/>
+                </conditions>
+            </filter>
+
+            <filter name="title" field-ref="titleField">
+                <value condition="CONTAINS"/>
+            </filter>
+            <filter name="abstract" field-ref="abstractField">
+                <value condition="CONTAINS"/>
+            </filter>
+            <!--  date issued -->
+            <filter name="embargoedDate" field-ref="availableDateField">
+                <value condition="EQ"/>
+            </filter>
+            <filter name="publishedDate" field-ref="availableDateField">
+                <value condition="RANGE"/>
+            </filter>
+
+            <filter name="keyword" field-ref="subjectField"/>
+
+            <filter name="rightsAccess">
+                <conditions>
+                    <condition>
+                        <filter field-ref="rightsNameField"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter field-ref="rightsURIField"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+            <filter name="version">
+                <conditions>
+                    <condition>
+                        <filter index-field="CreativeWork.schemaVersion"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="CreativeWork.version"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+            <filter name="license">
+                <conditions>
+                    <condition>
+                        <filter index-field="CreativeWork.license..CreativeWork.license.description"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="CreativeWork.license..CreativeWork.license.url"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+            <filter name="handle" field-ref="idHandleField"/>
+            <filter name="doi" field-ref="idDOIField"/>
+            <filter name="issn" field-ref="idISSNField"/>
+            <filter name="rcaapTID" field-ref="idRCAAPTIDField"/>
+
+            <filter name="identifier">
+                <conditions default-filter-ref="identifier">
+                    <condition filter-ref="handle"/>
+                    <condition operator="OR" filter-ref="doi"/>
+                    <condition operator="OR" filter-ref="issn"/>
+                    <condition operator="OR" filter-ref="rcaapTID"/>
+                </conditions>
+            </filter>
+
+            <filter name="type">
+                <conditions>
+                    <condition>
+                        <filter field-ref="typeNameField"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter field-ref="typeURIField"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+
+            
+            <!-- example request to be used with the following filter: 
+                    api/search?authorGivenName=Paulo
+                it will be converted to:
+                    &fq=ds.rfv.CreativeWork.author..Person.givenName:Paulo
+            -->
+
+            <filter name="orcid" index-field="CreativeWork.author..Person.identifier.orcid"/>
+            <filter name="cienciaID" index-field="CreativeWork.author..Person.identifier.cienciaID"/>
+            <filter name="givenName" index-field="CreativeWork.author..Person.givenName"/>
+            <filter name="familyName" index-field="CreativeWork.author..Person.familyName"/>
+            <filter name="_authorName" field-ref="authorPersonNameField"/>
+
+            <!-- &fq=(fs.Person.affiliation..Organization.identifier.isni:12345 OR fs.Person.identifier.other:12345)-->
+            <!-- example requests to be used with the following filter: 
+                api/search?author=Graca Paulo
+                api/search?author=authorCienciaIdFilter:1234-1234-1234
+                api/search?author=authorCienciaIdFilter:1234-1234-1234 authorOrcidFilter:5432-1234-1234
+                api/search?author=authorFamilyNameFilter:Graca authorCienciaIdFilter:1234-1234-1234 authorOrcidFilter:5432-1234-1234
+            -->
+
+            <filter name="_defaultAuthor">
+                <conditions>
+                    <condition operator="OR" filter-ref="_authorName"/>
+                    <condition operator="OR" filter-ref="givenName"/>
+                    <condition operator="OR" filter-ref="familyName"/>
+                    <condition operator="OR" filter-ref="orcid"/>
+                    <condition operator="OR" filter-ref="cienciaID"/>
+                    <condition operator="OR">
+                        <filter index-field="Person.identifier.other"/>
+                    </condition>
+                </conditions>
+            </filter>
+            <filter name="author">
+                <conditions default-filter-ref="_defaultAuthor">
+                    <condition filter-ref="givenName"/>
+                    <condition filter-ref="familyName"/>
+                    <condition filter-ref="orcid"/>
+                    <condition filter-ref="cienciaID"/>
+                    <!-- condition filter-ref="authorElectronicAddressFilter"/> -->
+                    <condition>
+                        <!-- &fq=(fs.Person.affiliation..Organization.identifier.isni:12345 OR fs.Person.identifier.other:12345)-->
+                        <filter name="isni">
+                            <conditions>
+                                <condition>
+                                    <filter index-field="Person.affiliation..Organization.identifier.isni"/>
+                                </condition>
+                                <condition operator="OR">
+                                    <filter index-field="Person.identifier.other"/>
+                                </condition>
+                            </conditions>
+                        </filter>
+                    </condition>
+                    <condition>
+                        <!-- filter name="authorElectronicAddressFilter" index-field="ds.rfv.CreativeWork.author..Person.email"/>  -->
+                        <filter name="affiliation"
+                            index-field="CreativeWork.author..CreativeWork.author.affiliation.name"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+            <!-- TODO funding -->
+            <filter name="_defaultFunding">
+                <conditions>
+                    <condition operator="OR">
+                        <filter index-field="Grant.fundedItem..MonetaryGrant.funder.alternateName"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="Grant.fundedItem..ResearchProject.award.identifier"/>
+                    </condition>
+                </conditions>
+            </filter>
+            <filter name="funding">
+                <conditions default-filter-ref="_defaultFunding">
+                    <condition>
+                        <filter name="funderAlternateName"
+                            index-field="Grant.fundedItem..MonetaryGrant.funder.alternateName"/>
+                    </condition>
+                    <condition>
+                        <filter name="awardIdentifier"
+                            index-field="Grant.fundedItem..ResearchProject.award.identifier"/>
+                    </condition>
+<!--
+                <index-field name="Grant.fundedItem..Funding.name"
+                <index-field name="Grant.fundedItem..Funding.alternateName"
+                <index-field name="Grant.fundedItem..ResearchProject.award.name"
+                <index-field name="Grant.fundedItem..MonetaryGrant.funder.name"
+                <index-field name="Grant.fundedItem..MonetaryGrant.funder.identifier"
+-->
+
+                </conditions>
+            </filter>
+
+
+            <!-- &fq=ds.efv.CreativeWork.inLanguage:pt_PT-->
+            <filter name="language" field-ref="languageField"/>
+
+            <filter name="_defaultService">
+                <conditions>
+                    <condition>
+                        <filter index-field="CreativeWork.provider..Service.name"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="CreativeWork.provider..Service.alternateName"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="CreativeWork.provider..Service.areaServed"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="CreativeWork.provider..RCAAP.repository..RCAAP.handlePrefix"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+            <filter name="service">
+                <conditions default-filter-ref="_defaultService">
+                    <condition>
+                        <filter name="name" index-field="CreativeWork.provider..Service.name"/>
+                    </condition>
+                    <condition>
+                        <filter name="alternateName" index-field="CreativeWork.provider..Service.alternateName"/>
+                    </condition>
+                    <condition>
+                        <filter name="country" index-field="CreativeWork.provider..Service.areaServed"/>
+                    </condition>
+                    <condition>
+                        <filter name="handlePrefix"
+                            index-field="CreativeWork.provider..RCAAP.repository..RCAAP.handlePrefix"/>
+                    </condition>
+                </conditions>
+            </filter>
+
+        </filters>
+        <sizes default="10">
+            <size>10</size>
+            <size>20</size>
+            <size>60</size>
+            <size>100</size>
+        </sizes>
+        <sorts>
+            <sort name="title" field-ref="titleField"/>
+            <sort name="date" field-ref="availableDateField"/>
+            <sort name="type" field-ref="typeNameField"/>
+        </sorts>
+        <facets minCount="1">
+            <facet-fields>
+                <facet name="type" field-ref="typeURIField" filter-ref="type"/>
+                <facet name="language" field-ref="languageField" filter-ref="language"/>
+                <facet name="service" field-ref="serviceNameField" filter-ref="service"/>
+            </facet-fields>
+            <facet-ranges>
+                <facet name="availableDate" field-ref="availableDateField" filter-ref="publishedDate"
+                    range-start="1822-01-01T00:00:00Z" range-end="NOW" range-gap="+1YEAR"/>
+            </facet-ranges>
+
+        </facets>
+    </configuration>
+</configurations>

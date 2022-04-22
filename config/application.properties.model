@@ -1,0 +1,73 @@
+###############################################################################
+# Copyright (c) 2019 LA Referencia / Red CLARA and others
+#
+# This file is part of LRHarvester v4.x software
+#
+#  This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#     
+#     For any further information please contact
+#     Lautaro Matas <lmatas@gmail.com>
+###############################################################################
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url=jdbc:postgresql://localhost:5432/lrharvester
+spring.datasource.username=lrharvester
+spring.datasource.password=lrharvester
+
+spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults = false
+spring.jackson.serialization.fail-on-empty-beans=false
+
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.format_sql=true
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = none
+
+# Spring Data REST base uri
+server.servlet.context-path=/api/v2
+# spring.data.rest.basePath=/beta
+
+solr.host = http://localhost:8983/solr
+
+entity.indexing.configfile = dummy.src
+
+server.port=8080
+# UNCOMMENT if you use a Apache proxy pass and need Spring to handle request types
+# server.forward-headers-strategy = framework
+
+rest.lareferencia.baseUrl=http://localhost:8080
+rest.lareferencia.spec="lareferencia-rest-api-v1"
+rest.lareferencia.metadata.title="LA Referencia REST API"
+rest.lareferencia.metadata.description="LA Referencia search REST API"
+rest.lareferencia.metadata.version=2.0.0
+rest.lareferencia.metadata.license="GNU General Public License"
+rest.lareferencia.metadata.licenseurl="https://www.gnu.org/licenses/"
+
+# spring security
+# comment this to turn on security
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+spring.security.user.name=admin
+spring.security.user.password=admin
+
+# Search Service to use
+rest.lareferencia.search.service=org.lareferencia.contrib.rcaap.search.services.solr.SearchServiceSolrImpl
+#rest.lareferencia.search.service=org.lareferencia.contrib.rcaap.search.services.elasticsearch.SearchServiceElasticSearchImpl
+
+### you can use search configurations from the classpath, inside your jar
+#rest.lareferencia.search.configFile = classpath:/search-configuration.xml
+### or, you can use search configurations from an absolute path in your file system
+#rest.lareferencia.search.configFile = file:/lareferencia/lareferencia-entity-rest/config/search-configuration.xml

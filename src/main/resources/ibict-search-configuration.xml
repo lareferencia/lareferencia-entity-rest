@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    This file enables the configuration settings to be used for searching within entities
+
+    To use this configuration, you must specify a qualifier:
+    @Autowired
+    @Qualifier("xmlService")
+    SearchConfigurationService searchConfigurationService;
+ -->
+
+<configurations xmlns="http://www.lareferencia.info/schema/4.0/search">
+
+    <configuration id="publicationSearchConfiguration">
+        
+		<index>entity</index>
+        <base-query>type:Publication</base-query>
+        
+		<fields>	
+			<field name="oasisbrIdField" index-field="oasisbrId"/>		
+			<field name="typeField" index-field="type"/>
+			<field name="titleField" index-field="title"/>
+			<field name="altTitleField" index-field="altTitle"/>
+			<field name="publicationDateField" index-field="publicationDate"/>
+			<field name="yearField" index-field="year"/>
+			<field name="authorLattesIdField" index-field="authorLattesId"/>
+			<field name="authorOrcidField" index-field="authorOrcid"/>
+			<field name="advisorLattesIdField" index-field="advisorLattesId"/>
+			<field name="advisorOrcidField" index-field="advisorOrcid"/>
+			<field name="coAdvisorLattesIdField" index-field="coAdvisorLattesId"/>
+			<field name="coAdvisorOrcidField" index-field="coAdvisorOrcid"/>
+			<field name="orgUnitNameField" index-field="orgUnitName"/>
+			<field name="programNameField" index-field="programName"/>
+			<field name="programIdField" index-field="programCapesId"/>
+			<field name="communityIdField" index-field="communityId"/>
+			<field name="keywordField" index-field="keyword"/>
+        </fields>
+        
+		<filters>
+
+            <!-- title (search is performed over the normalized (alternative) title) -->
+			<filter name="title" field-ref="altTitleField"/>
+            
+			<!-- publication date (as string for now) -->
+			<filter name="publicationDateFull" field-ref="publicationDateField">
+                <!--value condition="RANGE"/-->
+            </filter>
+			
+			<filter name="year" field-ref="yearField">
+                <!--value condition="RANGE"/-->
+            </filter>
+			
+            <filter name="publicationDate">
+                <conditions>
+                    <condition operator="OR" filter-ref="publicationDateFull"/>
+                    <condition operator="OR" filter-ref="year"/>
+                </conditions>
+            </filter>
+
+            <!-- type -->
+			<filter name="type" field-ref="typeField"/>
+			
+
+            <!-- Lattes id (author or advisor) -->
+			<filter name="authorLattesId" field-ref="authorLattesIdField"/>
+			<filter name="advisorLattesId" field-ref="advisorLattesIdField"/>
+			<filter name="coAdvisorLattesId" field-ref="coAdvisorLattesIdField"/>
+			<filter name="authorOrcid" field-ref="authorOrcidField"/>
+			<filter name="advisorOrcid" field-ref="advisorOrcidField"/>
+			<filter name="coAdvisorOrcid" field-ref="coAdvisorOrcidField"/>
+
+            <filter name="personId">
+                <conditions>
+                    <condition operator="OR" filter-ref="authorLattesId"/>
+                    <condition operator="OR" filter-ref="advisorLattesId"/>
+					<condition operator="OR" filter-ref="coAdvisorLattesId"/>
+					<condition operator="OR" filter-ref="authorOrcid"/>
+                    <condition operator="OR" filter-ref="advisorOrcid"/>
+					<condition operator="OR" filter-ref="coAdvisorOrcid"/>
+                </conditions>
+            </filter>
+			
+			<!-- community id -->
+			<filter name="communityId" field-ref="communityIdField"/>
+
+        </filters>
+        
+		<sizes default="10">
+            <size>10</size>
+            <size>20</size>
+            <size>60</size>
+            <size>100</size>
+        </sizes>
+        
+		<sorts>
+			<sort name="community" field-ref="communityIdField"/>
+			<sort name="year" field-ref="yearField"/>
+            <sort name="type" field-ref="typeField"/>
+			<sort name="title" field-ref="titleField"/>
+        </sorts>
+        
+		<facets minCount="1">
+            <facet-fields>
+                <facet name="type" field-ref="typeField" filter-ref="type"/>
+                <facet name="orgUnit" field-ref="orgUnitNameField" filter-ref="orgUnit"/>
+            </facet-fields>
+		</facets>
+    
+	</configuration>
+
+</configurations>

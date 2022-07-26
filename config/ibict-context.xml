@@ -41,11 +41,12 @@
 	<!-- Search Configuration Service -->
 	<!-- we choose to use XML source, but we could use beans -->
 	<bean id="searchConfigurationService"
-		class="org.lareferencia.contrib.rcaap.search.services.SearchConfigurationXMLService">
+		class="org.lareferencia.contrib.rcaap.search.services.SearchConfigurationXMLService" init-method="init">
 		<qualifier value="xmlService" />
-		<property name="SEARCH_CONFIG_XML"
-			value="config/ibict-search-configuration.xml" />
+		<property name="searchConfigFile"
+			value="${rest.lareferencia.search.configFile:classpath:/ibict-search-configuration.xml}"/>
 	</bean>
+
 
 	<!-- Search Service -->
 	<!-- we are using solr service -->

@@ -121,9 +121,8 @@
                 index-field="CreativeWork.contributor.organization..CreativeWork.contributor.name"/>
             <field name="idHandleField" index-field="CreativeWork.identifier.handle"/>
             <field name="idDOIField" index-field="CreativeWork.identifier.doi"/>
-            <!-- TODO -->
-            <field name="idISSNField" index-field="CreativeWork.identifier.doi"/>
-            <field name="idRCAAPTIDField" index-field="CreativeWork.identifier.doi"/>
+            <field name="idISSNField" index-field="CreativeWork.isPartOf.identifier"/>
+            <field name="idRCAAPTIDField" index-field="CreativeWork.identifier"/>
             <field name="rightsNameField" index-field="CreativeWork.conditionsOfAccess"/>
             <field name="rightsURIField" index-field="CreativeWork.conditionsOfAccess.uri"/>
             <field name="typeNameField" index-field="CreativeWork.additionalType"/>
@@ -214,12 +213,18 @@
             </filter>
 
             <filter name="handle" field-ref="idHandleField"/>
-            <filter name="doi" field-ref="idDOIField"/>
-            <filter name="issn" field-ref="idISSNField"/>
-            <filter name="rcaapTID" field-ref="idRCAAPTIDField"/>
+            <filter name="doi" field-ref="idDOIField">
+                <value condition="CONTAINS"/>
+            </filter>
+            <filter name="issn" field-ref="idISSNField">
+                <value condition="CONTAINS"/>
+            </filter>
+            <filter name="rcaapTID" field-ref="idRCAAPTIDField">
+                <value condition="CONTAINS"/>
+            </filter>
 
             <filter name="identifier">
-                <conditions default-filter-ref="identifier">
+                <conditions default-filter-ref="handle">
                     <condition filter-ref="handle"/>
                     <condition operator="OR" filter-ref="doi"/>
                     <condition operator="OR" filter-ref="issn"/>

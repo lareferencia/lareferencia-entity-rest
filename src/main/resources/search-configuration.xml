@@ -219,16 +219,26 @@
             <filter name="issn" field-ref="idISSNField">
                 <value condition="CONTAINS"/>
             </filter>
-            <filter name="rcaapTID" field-ref="idRCAAPTIDField">
+            <filter name="TID" field-ref="idRCAAPTIDField">
                 <value condition="CONTAINS"/>
             </filter>
 
-            <filter name="identifier">
-                <conditions default-filter-ref="handle">
+            <filter name="_defaultPubIdentifier">
+                <conditions>
                     <condition filter-ref="handle"/>
                     <condition operator="OR" filter-ref="doi"/>
                     <condition operator="OR" filter-ref="issn"/>
-                    <condition operator="OR" filter-ref="rcaapTID"/>
+                    <condition operator="OR" filter-ref="TID"/>
+                </conditions>
+            </filter>
+
+
+            <filter name="identifier">
+                <conditions default-filter-ref="_defaultPubIdentifier">
+                    <condition filter-ref="handle"/>
+                    <condition operator="OR" filter-ref="doi"/>
+                    <condition operator="OR" filter-ref="issn"/>
+                    <condition operator="OR" filter-ref="TID"/>
                 </conditions>
             </filter>
 

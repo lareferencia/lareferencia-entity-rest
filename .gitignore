@@ -29,3 +29,4 @@ HELP.md
 .vscode/
 config/third-party-context.xml
 entity-rest.jar
+pom.xml.versionsBackup

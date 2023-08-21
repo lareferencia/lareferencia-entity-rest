@@ -46,14 +46,14 @@
             <filter name="orcid" field-ref="orcidField"/>
             <filter name="cienciaID" field-ref="cienciaIdField"/>
 
-            <filter name="_defaultIdentifier">
+            <filter name="_defaultIdentifier.all">
                 <conditions>
                     <condition filter-ref="orcid"/>
                     <condition operator="OR" filter-ref="cienciaID"/>
                 </conditions>
             </filter>
             <filter name="identifier">
-                <conditions default-filter-ref="_defaultIdentifier">
+                <conditions default-filter-ref="_defaultIdentifier.all">
                     <condition filter-ref="orcid"/>
                     <condition filter-ref="cienciaID"/>
                 </conditions>
@@ -223,7 +223,7 @@
                 <value condition="CONTAINS"/>
             </filter>
 
-            <filter name="_defaultPubIdentifier">
+            <filter name="_defaultPubIdentifier.all">
                 <conditions>
                     <condition filter-ref="handle"/>
                     <condition operator="OR" filter-ref="doi"/>
@@ -232,9 +232,8 @@
                 </conditions>
             </filter>
 
-
             <filter name="identifier">
-                <conditions default-filter-ref="_defaultPubIdentifier">
+                <conditions default-filter-ref="_defaultPubIdentifier.all">
                     <condition filter-ref="handle"/>
                     <condition operator="OR" filter-ref="doi"/>
                     <condition operator="OR" filter-ref="issn"/>
@@ -253,19 +252,28 @@
                 </conditions>
             </filter>
 
-
-            
             <!-- example request to be used with the following filter: 
                     api/search?authorGivenName=Paulo
                 it will be converted to:
                     &fq=ds.rfv.CreativeWork.author..Person.givenName:Paulo
             -->
 
+            <filter name="_authorName" field-ref="authorPersonNameField"/>
             <filter name="orcid" index-field="CreativeWork.author..Person.identifier.orcid"/>
             <filter name="cienciaID" index-field="CreativeWork.author..Person.identifier.cienciaID"/>
             <filter name="givenName" index-field="CreativeWork.author..Person.givenName"/>
             <filter name="familyName" index-field="CreativeWork.author..Person.familyName"/>
-            <filter name="_authorName" field-ref="authorPersonNameField"/>
+            <filter name="affiliation" index-field="CreativeWork.author..CreativeWork.author.affiliation.name"/>
+            <filter name="isni">
+                <conditions>
+                    <condition>
+                        <filter index-field="Person.affiliation..Organization.identifier.isni"/>
+                    </condition>
+                    <condition operator="OR">
+                        <filter index-field="Person.identifier.other"/>
+                    </condition>
+                </conditions>
+            </filter>
 
             <!-- &fq=(fs.Person.affiliation..Organization.identifier.isni:12345 OR fs.Person.identifier.other:12345)-->
             <!-- example requests to be used with the following filter: 
@@ -275,7 +283,7 @@
                 api/search?author=authorFamilyNameFilter:Graca authorCienciaIdFilter:1234-1234-1234 authorOrcidFilter:5432-1234-1234
             -->
 
-            <filter name="_defaultAuthor">
+            <filter name="_defaultAuthor.all">
                 <conditions>
                     <condition operator="OR" filter-ref="_authorName"/>
                     <condition operator="OR" filter-ref="givenName"/>
@@ -288,54 +296,35 @@
                 </conditions>
             </filter>
             <filter name="author">
-                <conditions default-filter-ref="_defaultAuthor">
+                <conditions default-filter-ref="_defaultAuthor.all">
                     <condition filter-ref="givenName"/>
                     <condition filter-ref="familyName"/>
                     <condition filter-ref="orcid"/>
                     <condition filter-ref="cienciaID"/>
                     <!-- condition filter-ref="authorElectronicAddressFilter"/> -->
-                    <condition>
-                        <!-- &fq=(fs.Person.affiliation..Organization.identifier.isni:12345 OR fs.Person.identifier.other:12345)-->
-                        <filter name="isni">
-                            <conditions>
-                                <condition>
-                                    <filter index-field="Person.affiliation..Organization.identifier.isni"/>
-                                </condition>
-                                <condition operator="OR">
-                                    <filter index-field="Person.identifier.other"/>
-                                </condition>
-                            </conditions>
-                        </filter>
-                    </condition>
-                    <condition>
-                        <!-- filter name="authorElectronicAddressFilter" index-field="ds.rfv.CreativeWork.author..Person.email"/>  -->
-                        <filter name="affiliation"
-                            index-field="CreativeWork.author..CreativeWork.author.affiliation.name"/>
-                    </condition>
+                    <condition filter-ref="isni"/>
+                    <!-- &fq=(fs.Person.affiliation..Organization.identifier.isni:12345 OR fs.Person.identifier.other:12345)-->
+                    <condition filter-ref="affiliation"/>
+                    <!-- filter name="authorElectronicAddressFilter" index-field="ds.rfv.CreativeWork.author..Person.email"/>  -->
                 </conditions>
             </filter>
 
+
             <!-- TODO funding -->
-            <filter name="_defaultFunding">
+            <filter name="funderAlternateName" index-field="Grant.fundedItem..MonetaryGrant.funder.alternateName"/>
+            <filter name="awardIdentifier" index-field="Grant.fundedItem..ResearchProject.award.identifier"/>
+
+            <filter name="_defaultFunding.all">
                 <conditions>
-                    <condition operator="OR">
-                        <filter index-field="Grant.fundedItem..MonetaryGrant.funder.alternateName"/>
-                    </condition>
-                    <condition operator="OR">
-                        <filter index-field="Grant.fundedItem..ResearchProject.award.identifier"/>
-                    </condition>
+                    <condition operator="OR" filter-ref="funderAlternateName"/>
+                    <condition operator="OR" filter-ref="awardIdentifier"/>
                 </conditions>
             </filter>
+
             <filter name="funding">
-                <conditions default-filter-ref="_defaultFunding">
-                    <condition>
-                        <filter name="funderAlternateName"
-                            index-field="Grant.fundedItem..MonetaryGrant.funder.alternateName"/>
-                    </condition>
-                    <condition>
-                        <filter name="awardIdentifier"
-                            index-field="Grant.fundedItem..ResearchProject.award.identifier"/>
-                    </condition>
+                <conditions default-filter-ref="_defaultFunding.all">
+                    <condition filter-ref="funderAlternateName"/>
+                    <condition filter-ref="awardIdentifier"/>
 <!--
                 <index-field name="Grant.fundedItem..Funding.name"
                 <index-field name="Grant.fundedItem..Funding.alternateName"
@@ -343,7 +332,6 @@
                 <index-field name="Grant.fundedItem..MonetaryGrant.funder.name"
                 <index-field name="Grant.fundedItem..MonetaryGrant.funder.identifier"
 -->
-
                 </conditions>
             </filter>
 
@@ -351,38 +339,26 @@
             <!-- &fq=ds.efv.CreativeWork.inLanguage:pt_PT-->
             <filter name="language" field-ref="languageField"/>
 
-            <filter name="_defaultService">
+            <filter name="alternateName" index-field="CreativeWork.provider..Service.alternateName"/>
+            <filter name="name" index-field="CreativeWork.provider..Service.name"/>
+            <filter name="country" index-field="CreativeWork.provider..Service.areaServed"/>
+            <filter name="handlePrefix" index-field="CreativeWork.provider..RCAAP.repository..RCAAP.handlePrefix"/>
+
+            <filter name="_defaultService.all">
                 <conditions>
-                    <condition>
-                        <filter index-field="CreativeWork.provider..Service.name"/>
-                    </condition>
-                    <condition operator="OR">
-                        <filter index-field="CreativeWork.provider..Service.alternateName"/>
-                    </condition>
-                    <condition operator="OR">
-                        <filter index-field="CreativeWork.provider..Service.areaServed"/>
-                    </condition>
-                    <condition operator="OR">
-                        <filter index-field="CreativeWork.provider..RCAAP.repository..RCAAP.handlePrefix"/>
-                    </condition>
+                    <condition filter-ref="name"/>
+                    <condition operator="OR" filter-ref="alternateName"/>
+                    <condition operator="OR" filter-ref="country"/>
+                    <condition operator="OR" filter-ref="handlePrefix"/>
                 </conditions>
             </filter>
 
             <filter name="service">
-                <conditions default-filter-ref="_defaultService">
-                    <condition>
-                        <filter name="name" index-field="CreativeWork.provider..Service.name"/>
-                    </condition>
-                    <condition>
-                        <filter name="alternateName" index-field="CreativeWork.provider..Service.alternateName"/>
-                    </condition>
-                    <condition>
-                        <filter name="country" index-field="CreativeWork.provider..Service.areaServed"/>
-                    </condition>
-                    <condition>
-                        <filter name="handlePrefix"
-                            index-field="CreativeWork.provider..RCAAP.repository..RCAAP.handlePrefix"/>
-                    </condition>
+                <conditions default-filter-ref="_defaultService.all">
+                    <condition filter-ref="name"/>
+                    <condition filter-ref="alternateName"/>
+                    <condition filter-ref="country"/>
+                    <condition filter-ref="handlePrefix"/>
                 </conditions>
             </filter>
 

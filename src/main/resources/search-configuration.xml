@@ -31,6 +31,67 @@
  -->
 
 <configurations xmlns="http://www.lareferencia.info/schema/4.0/search">
+    <configuration id="serviceSearchConfiguration">
+        <index>entity</index>
+        <base-query>type:Service</base-query>
+        <fields>
+            <field name="nameField" index-field="Service.name"/>
+            <field name="alternateNameField" index-field="Service.alternateName"/>
+            <field name="countryField" index-field="Service.areaServed"/>
+            <field name="handlePrefixField" index-field="RCAAP.repository..RCAAP.handlePrefix"/>
+            <field name="serviceTypeField" index-field="Service.serviceType"/>
+            <field name="descriptionField" index-field="Service.description"/>
+            <field name="categoryField" index-field="Service.category"/>
+        </fields>
+
+        <filters default="_defaultName.all">
+
+            <filter name="_defaultName.all">
+                <conditions>
+                    <condition filter-ref="_defaultName"/>
+                    <condition operator="OR" filter-ref="alternateName"/>
+                    <condition operator="OR" filter-ref="description"/>
+                </conditions>
+            </filter>
+
+            <filter name="_defaultName" field-ref="nameField">
+                <value condition="CONTAINS"/>
+            </filter>
+
+            <filter name="alternateName" field-ref="alternateNameField"/>
+            <filter name="description" field-ref="descriptionField">
+                <value condition="CONTAINS"/>
+            </filter>
+
+            <filter name="name">
+                <conditions default-filter-ref="_defaultName">
+                    <condition>
+                        <filter field-ref="nameField"/>
+                    </condition>
+                    <condition filter-ref="alternateName"/>
+                </conditions>
+            </filter>
+
+            <filter name="category" field-ref="categoryField"/>
+            <filter name="country" field-ref="countryField"/>
+            <filter name="handlePrefix" field-ref="handlePrefixField"/>
+
+        </filters>
+        <sorts>
+            <sort name="name" default-direction="ASC" field-ref="nameField"/>
+        </sorts>
+        <sizes default="10">
+            <size>10</size>
+            <size>20</size>
+            <size>100</size>
+        </sizes>
+        <facets minCount="1">
+            <facet-fields>
+                <facet name="category" field-ref="categoryField" filter-ref="category"/>
+                <facet name="serviceType" field-ref="serviceTypeField" filter-ref="serviceType"/>
+            </facet-fields>
+        </facets>
+    </configuration>
     <configuration id="personSearchConfiguration">
         <index>entity</index>
         <base-query>type:Person</base-query>
@@ -128,7 +189,7 @@
             <field name="typeNameField" index-field="CreativeWork.additionalType"/>
             <field name="typeURIField" index-field="CreativeWork.additionalType.url"/>
             <field name="languageField" index-field="CreativeWork.inLanguage"/>
-            <field name="publishedDateField" index-field="CreativeWork.sdDatePublished"/>
+            <field name="publishedDateField" type="DATE" index-field="CreativeWork.sdDatePublished"/>
             <field name="availableDateField" type="DATE" index-field="CreativeWork.datePublished"/>
             <field name="serviceNameField" index-field="CreativeWork.provider..Service.alternateName"/>
         </fields>
@@ -371,7 +432,7 @@
         </sizes>
         <sorts>
             <sort name="title" field-ref="titleField"/>
-            <sort name="date" field-ref="availableDateField"/>
+            <sort name="date" field-ref="publishedDateField"/>
             <sort name="type" field-ref="typeNameField"/>
         </sorts>
         <facets minCount="1">

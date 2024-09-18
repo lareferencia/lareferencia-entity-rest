@@ -33,7 +33,7 @@
     <parent>
         <groupId>org.lareferencia</groupId>
         <artifactId>lareferencia-parent</artifactId>
-        <version>4.2.3</version>
+        <version>4.2.4</version>
     </parent>
 
     <dependencies>
@@ -41,13 +41,13 @@
         <dependency>
             <groupId>org.lareferencia</groupId>
             <artifactId>lareferencia-core-lib</artifactId>
-            <version>4.2.3</version>
+            <version>4.2.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.lareferencia</groupId>
             <artifactId>lareferencia-entity-lib</artifactId>
-            <version>4.2.3</version>
+            <version>4.2.4</version>
         </dependency>
 
         <dependency>
@@ -118,12 +118,12 @@
                 <dependency>
                     <groupId>org.lareferencia</groupId>
                     <artifactId>lareferencia-entity-lib</artifactId>
-                    <version>4.2.3</version>
+                    <version>4.2.4</version>
                 </dependency>
                 <dependency>
                     <groupId>org.lareferencia</groupId>
                     <artifactId>lareferencia-shell-entity-plugin</artifactId>
-                    <version>4.2.3</version>
+                    <version>4.2.4</version>
                 </dependency>
             </dependencies>
             <build>
@@ -158,7 +158,7 @@
                 <dependency>
                     <groupId>org.lareferencia</groupId>
                     <artifactId>lareferencia-contrib-rcaap</artifactId>
-                    <version>4.2.3</version>
+                    <version>4.2.4</version>
                 </dependency>
             </dependencies>
             <build>
@@ -193,12 +193,12 @@
                 <dependency>
                     <groupId>org.lareferencia</groupId>
                     <artifactId>lareferencia-contrib-rcaap</artifactId>
-                    <version>4.2.3</version>
+                    <version>4.2.4</version>
                 </dependency>
                 <dependency>
                     <groupId>org.lareferencia</groupId>
                     <artifactId>lareferencia-contrib-ibict</artifactId>
-                    <version>4.2.3</version>
+                    <version>4.2.4</version>
                 </dependency>
             </dependencies>
             <build>

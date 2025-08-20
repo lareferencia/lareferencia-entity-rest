@@ -34,10 +34,10 @@ import springfox.documentation.annotations.ApiIgnore;
 @Configuration
 public class EntitySearchController {
 
-
-    @Autowired
-    @Qualifier("entitySearchServiceSolrImpl")
-    IEntitySearchService service;
+    // Commented out to avoid Solr dependency issues
+    // @Autowired
+    // @Qualifier("entitySearchServiceSolrImpl")
+    // IEntitySearchService service;
 
     // @ApiOperation(value = "Returns a list of entities for a certain {type}")
     // @ApiResponses(value = { @ApiResponse(code = 200, message = "Returns a list of
@@ -51,6 +51,8 @@ public class EntitySearchController {
     // return new ResponseEntity<>(entities, HttpStatus.OK);
     // }
 
+    // Commented out to avoid Solr dependency issues
+    /*
     @ApiOperation(value = "Returns a list of entities for a certain {type} with entity fields containing {expressions}")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Returns a list of entities for a certain {type} with entity fields containing {expressions}") })
@@ -70,6 +72,7 @@ public class EntitySearchController {
 
         return new ResponseEntity<>(entities, HttpStatus.OK);
     }
+    */
 
    
 

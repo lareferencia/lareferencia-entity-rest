@@ -1,6 +1,6 @@
 package org.lareferencia.app.rest;
 
-import jakarta.servlet.ServletContext;
+import javax.servlet.ServletContext;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -17,10 +17,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-// REMOVED: Spring Data Solr no longer exists in Spring Boot 3.x
-// import org.springframework.data.solr.core.RequestMethod;
-// import org.springframework.data.solr.core.SolrTemplate;
-// import org.springframework.data.solr.repository.config.EnableSolrRepositories;
+import org.springframework.data.solr.core.RequestMethod;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.databind.Module;
@@ -40,8 +39,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ComponentScan( basePackages = { "org.lareferencia.core", "org.lareferencia.app.rest"})
 @EntityScan("org.lareferencia.core.entity.domain")
 @EnableJpaRepositories(value = "org.lareferencia.core.entity.repositories.jpa")
-// REMOVED: Spring Data Solr no longer exists in Spring Boot 3.x
-// @EnableSolrRepositories(basePackages = "org.lareferencia.core.entity.repositories.solr")
+@EnableSolrRepositories(basePackages = "org.lareferencia.core.entity.repositories.solr")
 //@EnableAutoConfiguration(exclude = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class })
 @EnableSwagger2
 @Configuration
@@ -64,11 +62,7 @@ public class LareferenciaEntityRestApplication {
         SpringApplication.run(LareferenciaEntityRestApplication.class, args);
     }
 
-    /** REMOVED: Solr configuration beans - Spring Data Solr no longer exists in Spring Boot 3.x
-     *  To re-enable Solr functionality, use Apache Solr Client directly.
-     *  See SOLR_MIGRATION_NOTES.md for migration guide.
-     */
-    /*
+    /** Configurations beans for solr services */
     @Bean
     public SolrClient solrClient(@Value("${solr.host}") String solrHost) {
         return new HttpSolrClient.Builder(solrHost).build();
@@ -76,10 +70,10 @@ public class LareferenciaEntityRestApplication {
 
     @Bean
     public SolrTemplate solrTemplate(SolrClient client) throws Exception {
+
         SolrTemplate template = new SolrTemplate(client, RequestMethod.POST);
         return template;
     }
-    */
 
     /** Configurations beans for Guava serialization */
     @Bean

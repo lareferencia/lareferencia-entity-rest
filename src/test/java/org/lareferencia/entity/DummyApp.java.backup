@@ -11,16 +11,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-// REMOVED: Spring Data Solr no longer exists in Spring Boot 3.x
-// import org.springframework.data.solr.core.SolrTemplate;
-// import org.springframework.data.solr.repository.config.EnableSolrRepositories;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
 @SpringBootApplication
 @ComponentScan("org.lareferencia.core.entity")
 @EntityScan("org.lareferencia.core.entity.domain")
 @EnableJpaRepositories(value="org.lareferencia.core.entity.repositories.jpa")
-// REMOVED: Spring Data Solr no longer exists in Spring Boot 3.x
-// @EnableSolrRepositories( basePackages = "org.lareferencia.core.entity.repositories.solr")
+@EnableSolrRepositories( basePackages = "org.lareferencia.core.entity.repositories.solr"/*, namedQueriesLocation = "classpath:solr-named-queries.properties", */)
 @EnableAutoConfiguration(exclude = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class} )
 @Configuration
 @ComponentScan

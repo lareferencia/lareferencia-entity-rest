@@ -1,3 +1,7 @@
+# NOTE: Spring Data Solr was removed in Spring Boot 3.x
+# If you need Solr functionality, use Apache Solr Client directly
+# See SOLR_MIGRATION_NOTES.md for details
+
 ###############################################################################
 # Copyright (c) 2019 LA Referencia / Red CLARA and others
 #
@@ -24,7 +28,6 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/lrharvester
 spring.datasource.username=lrharvester
 spring.datasource.password=lrharvester
 
-spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults = false
 spring.jackson.serialization.fail-on-empty-beans=false
 
 # The SQL dialect makes Hibernate generate better SQL for the chosen database

@@ -26,8 +26,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>lareferencia-entity-rest</artifactId>
-    <name>LAReferencia Entity REST</name>
-    <description>LAReferencia Entity REST App</description>
+    <name>LA Referencia Entity REST</name>
+    <description>LA Referencia Entity REST App</description>
 
 
     <parent>
@@ -190,16 +190,7 @@
             <id>ibict</id>
             <properties></properties>
             <dependencies>
-                <dependency>
-                    <groupId>org.lareferencia</groupId>
-                    <artifactId>lareferencia-contrib-rcaap</artifactId>
-                    <version>4.2.6</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.lareferencia</groupId>
-                    <artifactId>lareferencia-contrib-ibict</artifactId>
-                    <version>4.2.6</version>
-                </dependency>
+        
             </dependencies>
             <build>
                 <plugins>
